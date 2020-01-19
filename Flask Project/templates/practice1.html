@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-16">
+	<script src= "practice.js" defer></script>
+	<link rel="stylesheet" type="text/css" href="practice.css">
+	<title>Raku's Own webpage</title>
+	<style type= "text/css">
+		body{
+			background-image:url(pics.png);
+			background-size: cover;
+			background-attachment: fixed;
+		}
+		.content{
+			background: rgba(76, 175, 80, 0.5);
+			width:80%;
+			padding: 40px;
+			margin:60px;
+			font-family: Arial;
+		}
+		p{
+			font-size:25px;
+			color:black;
+		}
+
+		</style>
+</head>
+<body>
+	<div class= "content">
+	<h1 align= "Center">Welcome to My webpage! I will share my favourite music, <a href="Games">games</a>
+	and game musics from time to time</h1>
+	<hr/>
+	<div class="tabs">
+		<div id="home">
+			<div class="tabs__sidebar">
+				<button class="tabs__button tabs__button--active"data-for-tab="1">Home</button>
+				<button class="tabs__button"data-for-tab="2">Favourite Games</button>
+				<button class="tabs__button"data-for-tab="3">Favourite Musics</button>
+				<button class="tabs__button"data-for-tab="4">About Me</button>
+				<button class="tabs__button"data-for-tab="5">Submit Feedback</button>
+			</div>
+			<div class="tabs__content tabs__content--active" data-tab="1">
+				<h2 align="Center">Home</h2>
+				<p id = "current music"> Click on <a href="https://youtu.be/ySQIOtjSHIc">this</a> and you can listen to my favourite music as of is rightnow <br>
+				<P id = "game music"> My current favourite Game music is embeded as below!
+					<div id="iframe container" align ="Center">
+						<iframe width="560" height="315" src="https://www.youtube.com/embed/po_t8I9FC2Y" frameborder="0" allow="accelerometer; autoplay;
+						encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+					</div>
+				</div>
+			<div class="tabs__content" data-tab="2">
+					<ol>
+						<h1 id="Games">My Favourite Games of 2019! <code>(</code>Click on the title for accessing it's trailer!<code>)</code> </h1>
+						<p>1<code>.</code> <a href="https://youtu.be/tCI396HyhbQ">Death Stranding!</a> <br>
+							<img src= "Death Stranding.png" width="400" height="250" align = "Center" alt="Death Stranding"/>
+						<p>2<code>.</code> Sekiro!</p>
+							<img src="Sekiro.jfif" width="400" height="250" style = "display: block: margin-left: auto: margin-right: autp:"/>
+					</ol>
+					<br><h4 class= "End">Score of the games I gave to two of these games</h4>
+					<table border ="1" class="End">
+						<caption> Games Score </caption>
+						<tr>
+							<th colspan="2"></th>
+							<th>Replayability</th>
+							<th>Innovation</th>
+							<th>Effort</th>
+						</tr>
+						<tr>
+							<td rowspan="2">1.</td>
+							<td>Death Stranding</td>
+							<td>8</td>
+							<td>9<code>.</code>5</td>
+							<td>10</td>
+						</tr>
+						<tr>
+							<td colspan="1" align= "Center">Score</td>
+							<td colspan="3" align="Center">9.5</td>
+						</tr>
+						<tr>
+							<td rowspan="2">2.</td>
+							<td>Sekiro</td>
+							<td>10</td>
+							<td>7</td>
+							<td>10</td>
+						</tr>
+					</table>
+				</div>
+			<div class="tabs__content" data-tab="3">
+				<h4 class = "music"> My top picks for music of all times for different genres</h4>
+				<ol class="Musicstyle">
+					<li style="font-size:22px">Heavy Metal</li>
+					<ul>
+						<li style="font-size:18px">Desperate by nocturnal Bloodlust</li>
+						<li style="font-size:18px">Nightmare by Aveneged Sevenfold</li>
+					</ul>
+					<li style="font-size:22px">Japanese musics</li>
+					<ul>
+						<li style="font-size:18px"><a href="https://youtu.be/VJy8qZ77bpE">眩しいDNAだけ</a> by ずっと真夜中でいいのに</li>
+						<li style="font-size:18px"><a href= "https://youtu.be/loxujxwIb5U"> フリージア</a> by Uru</li>
+					</ul>
+				</ol>
+			</div>
+			<div class="tabs__content" data-tab="4">
+				<h4>About Me</h4>
+					<p title="OMG">I'm currently a concordia student and have participated in multiple game jams</p>
+	      	<p>I love to play musics and do compose musics from time to time</p>
+	      	<p>Hope You have a great time checking all the contents</p>
+			</div>
+			<div class="tabs__content" data-tab="5">
+				<h1> let me type some gibberish</h1>
+			</div>
+		</div>
+		<script src="practice.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+.End{
+  color: azure;
+  font-size:25px;
+  font-family:Arial;
+  background-color:darkgreen;
+  width:40%
+  padding:30px;
+  margin:100px auto;
+
+}
+ol.Musicstyle{
+  font-family:cursive sans-serif;
+
+}
+
+.iframe-container{
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+}
+.iframe-container iframe{
+  position: absolute;
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tabs{
+  width:100%;
+  height:130%;
+}
+.tabs .tabs__sidebar{
+  height:20%;
+}
+
+.tabs .tabs__sidebar .tabs__button{
+  width:20%;
+  height:100%;
+  float:left;
+  padding:10px;
+  border: none;
+  outline:none;
+  cursor:pointer;
+  font-size:13px;
+  background-color:#eee;
+}
+.tabs__button:active{
+  background:#dddddd;
+}
+.tabs__button:not(:last-of-type){
+  border-bottom: 1px solid #cccccc;
+}
+.tabs__button--active{
+  font-weight: bold;
+  border-right:2px solid #009;
+  background: #dddddd;
+}
+
+.tabs__content{
+  padding:18px;
+  font-size:0.8rem;
+  display:none;
+}
+
+.tabs__content--active{
+  display:block;
+}
+
+.tabs__content >:first-child{
+  margin-top: 0;
+}
