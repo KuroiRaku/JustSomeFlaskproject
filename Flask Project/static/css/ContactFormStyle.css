@@ -5,6 +5,7 @@
 }
 /* Style inputs with type="text", select elements and textareas */
 form{
+  display: inline-block;
   max-width: 800px;
   margin:auto;
   padding:10px;
@@ -12,12 +13,13 @@ form{
 }
 
 form textarea#Message{
-
+  display: inline-block;
   height: 150px;
   margin:auto;
 }
 
 input[type=text], select, textarea {
+  display: inline-block;
   width: 100%; /* Full width */
   margin-left: auto;
   margin-right: auto;
@@ -51,6 +53,7 @@ input[type=submit]:hover {
 
 /* Add a background color and some padding around the form */
 .Container {
+  display: inline-block;
   border-radius: 5px;
   background-color: #f2f2f2;
   padding: 20px;

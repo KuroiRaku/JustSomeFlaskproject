@@ -1,16 +1,21 @@
-
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<script type="text/javascript" src= "{{url_for('static',filename='js/practice.js')}}"></script>
-	<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/practice.css')}}">
-	<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/music_index.css')}}">
-	<link href="https://fonts.googleapis.com/css?family=Josefin+Slab|Open+Sans|Open+Sans+Condensed:300|Oswald&display=swap" rel="stylesheet">
+
+	{% block title %}
 	<title>Raku's Own webpage</title>
+	{% endblock %}
+	{% block styles %}
+	{{super()}}
+	<link href="https://fonts.googleapis.com/css?family=Josefin+Slab|Open+Sans|Open+Sans+Condensed:300|Oswald&display=swap" rel="stylesheet">
 	<style type= "text/css">
+
 		body
 		{
-			margin:0;
+			display:inline-block;
 			background-image: url({{ url_for('static', filename='pics.png') }});
 			background-size: cover;
 			background-attachment: fixed;
@@ -21,9 +26,8 @@
 		}
 
 		.content{
+			display:inline-block;
 			background: rgba(76, 175, 80, 0.5);
-			margin:20px;
-			margin-right: -20px;
 			width:100%;
 			font-size:'Open Sans Condensed',sans-serif;
 		}
@@ -32,10 +36,17 @@
 			color:black;
 			font-size:'Open Sans Condensed',sans-serif;
 		}
-
+		form{
+			margin:0px auto;
+			width: 500px;
+		}
 		</style>
+		{% endblock %}
 </head>
 <body>
   {% block content %}{% endblock %}
   </body>
+	<footer>
+	{% block footer %}{% endblock %}
+</footer>
 </html>

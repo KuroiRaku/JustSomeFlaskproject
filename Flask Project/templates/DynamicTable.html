@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block styles %}
+{{super()}}
+
+<style type= "text/css">
+  body
+  {
+
+    background-image: url({{ url_for('static', filename='pics2.png') }});
+
+  }
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+{{super()}}
+
+  {% if success%}
+  <p> Music has been added!.</p>
+  <button class=" back__button"type="button" onclick="window.location.href='{{ url_for( 'Home')}}'">Back</button>
+  {% else %}
+
+
+<div class="container" align = "Center">
+
+  <form class="form-signin" method="POST" action="/AddMusic" align = "Center">
+    <h2 class="form-signin-heading">Enter your favourite artist and song name below :D</h2>
+    {{ form.hidden_tag() }}
+    {{ wtf.form_field(form.ArtistName) }}
+    {% for message in form.ArtistName.errors %}
+      <div class="flash">{{ message }}</div>
+    {% endfor %}
+
+
+    {{ wtf.form_field(form.SongName) }}
+
+    {% for message in form.SongName.errors %}
+      <div class="flash">{{ message }}</div>
+    {% endfor %}
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+    <button class=" back__button"type="button" onclick="window.location.href='{{ url_for( 'Home')}}'">Back</button>
+  </form>
+
+</div>
+
+
+  {% endif %}
+{% endblock %}

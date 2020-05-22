@@ -1,38 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8"name="viewport" content="width=device-width, initial-scale=1">
-	<title>Contact Me</title>
-	<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/ContactFormStyle.css')}}">
+{% extends "layout.html" %}
+
+
+{% block title %}
+Contact Form
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/ContactFormStyle.css')}}">
 	<style type= "text/css">
-	.back__button{
-		align = Center;
+		.back__button{
+			position: absolute;
+    	top: 50;
+		}
+		.back__button:active
+		{
 
-	}
-	.back__button:active
-	{
+		}
+		.wrapper {
+    	text-align: center;
+		}
 
-	}
-	h1
-	{
-		background-color: darkgreen;
-	}
-	body
-	{
-		background-color: lightblue;
-	}
-    </style>
-    </head>
+		.container-fluid{
+			text-align: center;
+		}
+		h1
+		{
+			background-color: darkgreen;
+		}
+		body
+		{
+			background-color: lightblue;
+		}
+		</style>
+
+{% endblock %}
+{% block content %}
 
 		{% if success%}
 		<p> Thank you for your message. We'll get back to you shortly.</p>
 		<button class=" back__button"type="button" onclick="window.location.href='{{ url_for( 'Home')}}'">Back</button>
 		{% else %}
 			{% for message in form.FirstName.errors %}
-				<div class="flash">{{ message }}</div>
-			{% endfor %}
-
-			{% for message in form.Email.errors %}
 				<div class="flash">{{ message }}</div>
 			{% endfor %}
 
@@ -47,8 +56,10 @@
 			{% for message in get_flashed_messages() %}
 				<div class="flash">{{ message }}</div>
 			{% endfor %}
-			<div class="Container">
-				<form class="form-inline" action="{{ url_for('Contact') }}" method=post>
+			<div class="container-fluid">
+				<form action="{{ url_for('Contact') }}" method=post>
+
+
 					{{ form.hidden_tag() }}
 
 					{{ form.FirstName.label }}
@@ -56,9 +67,6 @@
 
 					{{ form.LastName.label }}
 					{{ form.LastName }}
-
-					{{ form.Email.label }}
-					{{ form.Email }}
 
 					{{ form.Interest.label }}
 					{{ form.Interest(placeholder= "Say what you do the best! e.g. Coding, drawing, storywriting...") }}
@@ -70,11 +78,14 @@
 					{{ form.Message }}
 
 					{{ form.Submit }}
+
 				</form>
 			</div>
 			<br style="line-height:5;">
-      <button class=" back__button"type="button" onclick="window.location.href='{{ url_for( 'Home')}}'">Back</button>
+			<div class="wrapper">
+    		<button class=" back__button"type="button" align= "Center" onclick="window.location.href='{{ url_for( 'Home')}}'">Back</button>
+			</div>
 			{% endif %}
 
-		</body>
-		</html>
+
+{% endblock %}

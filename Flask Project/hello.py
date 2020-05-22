@@ -1,12 +1,13 @@
 import os
 from os import path
-from flask import Blueprint, Flask, render_template, url_for, request, flash, current_app, redirect, session
+from flask import Flask, render_template, url_for, request, flash, current_app, redirect, session
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_bootstrap import Bootstrap
 from flask_wtf import Form, FlaskForm
 from flask_mail import Message, Mail
 from flask_moment import Moment
 from wtforms import TextField, TextAreaField, SubmitField, SelectField, ValidationError, StringField, PasswordField, BooleanField
-from wtforms.validators import InputRequired, Email, DataRequired, Length
+from wtforms.validators import InputRequired, Email, DataRequired, Length, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
@@ -21,21 +22,25 @@ Moment= Moment()
 LoginManager = LoginManager()
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db=SQLAlchemy(app)
 bootstrap = Bootstrap(app)
 
-#This will get rewritten in myconfig, just wanna show logic behind it
+
 DEBUG=False
 Basedir = path.abspath(path.dirname(__file__))
 MusicFolder = os.path.join(Basedir, 'static/mp3')
-Main = Blueprint('main', __name__)
+
+
 
 app.config['MusicFolder'] = MusicFolder
 app.config.from_object(__name__)
 app.config.from_pyfile('myconfig.cfg')
 app.config['SECRET_KEY']='123456789_ABC'
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///D:\\All of My folders\\Assignment\\Python Project\\databse.db'
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///D:\\All of My folders\\Assignment\\Flask Project\\databse.db'
+app.config['SQLALCHEMY_BINDS']={'songs':'sqlite:///D:\\All of My folders\\Assignment\\Flask Project\\MusicDatabse.db'}
 app.config['CSRF_ENABLED']= True
+
 #no money to buy server...
 app.config['SERVER_NAME']='localhost:5000'
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
@@ -43,7 +48,8 @@ app.config["MAIL_PORT"] = 465
 app.config["MAIL_USE_SSL"] = True
 app.config["MAIL_USERNAME"] = 'mikazuki599@gmail.com'
 app.config["MAIL_PASSWORD"] = '123456789_ABC'
-app.register_blueprint(Main)
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+
 
 Mail.init_app(app)
 Moment.init_app(app)
@@ -52,27 +58,18 @@ db.create_all()
 
 
 LoginManager.session_protection = 'strong'
-LoginManager.login_view = 'LogIn'
+LoginManager.login_view = 'login'
 LoginManager.login_message='You need to login!'
 
-class DevelopmentConfig(Config):
-    DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-        'sqlite:///' + os.path.join(Basedir, 'data-dev.sqlite')
 
-
-class TestingConfig(Config):
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-        'sqlite:///' + os.path.join(Basedir, 'data-test.sqlite')
-
-
-class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(Basedir, 'data.sqlite')
+class Song(db.Model):
+    __bind_key__='songs'
+    id = db.Column(db.Integer, primary_key=True)
+    ArtistName = db.Column(db.String(30))
+    SongName = db.Column(db.String(40))
 
 class LoginForm(FlaskForm):
-    username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
+    email = StringField('email', validators=[InputRequired(), Length(min=4, max=50)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
     remember = BooleanField('remember me')
 
@@ -80,11 +77,14 @@ class RegisterForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError('There is account with that email. Please use different account.')
 
 class ContactForm(Form):
     FirstName= TextField("FirstName", validators=[InputRequired("Please")])
     LastName = TextField("LastName", validators=[DataRequired()])
-    Email = TextField("Email", validators=[DataRequired(), Email()])
     Continent= SelectField("Continent", validators=[DataRequired()], choices=[('NorthAmerica', 'North America'), ('SouthAmerica','South America'),
      ('Europe', 'Europe'), ('MiddleEast','Middle East'), ('Africa', 'Africa'), ('Asia', 'Asia'),('Australia','Australia')])
     Interest = TextField("Interest",validators=[DataRequired()])
@@ -96,6 +96,37 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(15), unique=True)
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(80))
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(app.config['SECRET_KEY'], expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
+
+class RequestResetForm(FlaskForm):
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is None:
+            raise ValidationError('There is no account with that email. You must register first.')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')
+
+class MusicForm(FlaskForm):
+    ArtistName = StringField('artist', validators=[InputRequired(), Length(min=1, max=30)])
+    SongName = StringField('song', validators=[InputRequired(), Length(min=1, max=30)])
 
 @LoginManager.user_loader
 def LoadUser(UserId):
@@ -116,13 +147,15 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         if user:
             if check_password_hash(user.password, form.password.data):
                 login_user(user, remember=form.remember.data)
+                session['username'] = user.username
+                session['email']= user.email
                 return redirect(url_for('Home'))
 
-        return '<h1>Invalid username or password</h1>'
+        return '<h1>Invalid email or password</h1>'
         #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
     return render_template('login.html', form=form)
 
@@ -132,15 +165,60 @@ def signup():
     form = RegisterForm()
 
     if form.validate_on_submit():
+
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
 
-        return '<h1>New user has been created!</h1>'
+        return render_template('NewUserCreated.html')
         #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
     return render_template('signup.html', form=form)
+
+
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request',
+                  sender='mikazuki599@gmail.com',
+                  recipients=[user.email])
+    msg.body = user.username+ f''' To reset your password, visit the following link:
+{url_for('reset_token', token=token, _external=True)}
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+    Mail.send(msg)
+
+
+@app.route("/password", methods=['GET', 'POST'])
+def password():
+    if current_user.is_authenticated:
+        return redirect(url_for('Home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('login'))
+    return render_template('forgetPassword.html', title='Reset Password', form=form)
+
+
+@app.route("/password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('Home'))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data)
+        user.password = hashed_password
+        db.session.commit()
+        flash('Your password has been updated! You are now able to log in', 'success')
+        return redirect(url_for('login'))
+    return render_template('resetToken.html', title='Reset Password', form=form)
 
 @app.route('/logout')
 @login_required
@@ -151,7 +229,8 @@ def LogOut():
 @app.route('/Home')
 @login_required
 def Home():
-    return render_template('practice.html')
+    Songs = Song.query.all()
+    return render_template('practice.html',username=session['username'],email= session['email'], Songs=Songs)
 
 @app.route('/mp3/Haru.mp3', methods=['GET'])
 @login_required
@@ -175,6 +254,7 @@ def UploadFile():
 @app.route('/Contact_Me',methods=['GET','POST'])
 @fresh_login_required
 def Contact():
+    Email = session['email']
     form = ContactForm(request.form)
     if request.method =='POST':
         if form.validate==False:
@@ -185,7 +265,7 @@ def Contact():
              msg.body = """
              From: %s %s; %s ;
              %s
-             """ % (form.FirstName.data, form.LastName.data,form.Email.data, form.Message.data)
+             """ % (form.FirstName.data, form.LastName.data,Email, form.Message.data)
              Mail.send(msg)
 
              return render_template('ContactMe.html', success=True)
@@ -193,7 +273,18 @@ def Contact():
     elif request.method == 'GET':
         return render_template('ContactMe.html',form=form)
 
+@app.route('/AddMusic', methods=['GET', 'POST'])
+def AddMusic():
+    form = MusicForm()
 
+    if form.validate_on_submit():
+        new_song = Song(ArtistName=form.ArtistName.data, SongName=form.SongName.data)
+        db.session.add(new_song)
+        db.session.commit()
+        return render_template('DynamicTable.html', form=form, success= True)
+        #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+
+    return render_template('DynamicTable.html', form=form)
 
 if __name__=="__main__":
     db.create_all()

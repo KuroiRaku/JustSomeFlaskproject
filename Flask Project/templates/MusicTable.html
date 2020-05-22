@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+{{super()}}
+
+<div class="container">
+  <p> The list :D</p>
+  <ul>
+    {% for song in Songs %}
+    <li>{{song.ArtistName}}:{{song.SongName}}</li>
+    {% endfor %}
+  </ul>
+
+  <table class = "table table-bordered table-dark">
+    <tr>
+      <th>ID</th>
+      <th>Artist</th>
+      <th>SongName</th>
+    </tr>
+    {% for song in Songs %}
+    <tr>
+      <th>{{song.id}}</th>
+      <th>{{song.ArtistName}}</th>
+      <th>{{song.SongName}}</th>
+    </tr>
+    {% endfor %}
+
+</div>
+
+
+
+
+{% endblock %}

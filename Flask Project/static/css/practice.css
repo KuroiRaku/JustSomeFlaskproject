@@ -1,36 +1,33 @@
+.active-pink-2 input.form-control[type=text]:focus:not([readonly]) {
+              border-bottom: 1px solid #f48fb1;
+              box-shadow: 0 1px 0 0 #f48fb1;
+            }
+
 
 .left-column, .right-column{
   width:23%;
   float:left;
 }
 
-.container div{
-  box-sizing:border-box;
-  min-height:200px;
-}
+
 .middle-column{
   width:50%;
-  color: azure;
   font-size:14px;
   font-family:Arial;
-  background-color:darkgreen;
   float:left;
-  border: solid;
 }
-.footer{
+footer{
   clear:both;
   text-align:center;
   height:50px;
   color:blue;
 }
-.middle-column caption
-{
+.middle-column caption{
   font-size: 20px;
   color: Lavender;
 }
 
-.middle-column h4
-{
+.middle-column h4{
   font-size: 18px;
   color: grey;
 }
@@ -91,6 +88,7 @@ ol.Musicstyle{
 
 .tabs__content{
   padding:18px;
+  background: rgba(76, 175, 80, 0.3);
   font-size:0.8rem;
   font-family:'Open Sans Condensed',sans-serif;
   display:none;
